@@ -56,5 +56,5 @@ RUN chown -R node:node /etc/n8n-task-runners.json
 
 USER node
 
-# Lancer le task-runner-launcher avec les types de runners
-CMD ["/usr/local/bin/task-runner-launcher", "javascript", "python"]
+# Lancer uniquement le runner Python
+CMD ["/usr/local/bin/task-runner-launcher", "python"]
