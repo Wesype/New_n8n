@@ -48,5 +48,5 @@ RUN chown -R node:node /etc/n8n-task-runners.json
 
 USER node
 
-# Lancer le task runner
-CMD ["task-runner"]
+# Lancer le task runner avec le chemin complet
+CMD ["npx", "@n8n/task-runner"]
