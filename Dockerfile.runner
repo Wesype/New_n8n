@@ -45,22 +45,18 @@ RUN playwright install --with-deps chromium
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 ENV PLAYWRIGHT_CHROMIUM_ARGS="--no-sandbox --disable-setuid-sandbox"
 
-# Créer l'utilisateur node
+# Créer l'utilisateur node et son répertoire de travail
 RUN useradd -m -u 1000 node || true
-
-# Créer un répertoire de travail
-RUN mkdir -p /home/node/work && chown -R node:node /home/node
+RUN mkdir -p /home/node/.n8n && chown -R node:node /home/node
 
 # Copier la configuration allowlist
 COPY n8n-task-runners.json /etc/n8n-task-runners.json
-
-# Donner les permissions
-RUN chown -R node:node /etc/n8n-task-runners.json
+RUN chown node:node /etc/n8n-task-runners.json
 
 USER node
 
 # Définir le répertoire de travail
-WORKDIR /home/node/work
+WORKDIR /home/node
 
 # Lancer uniquement le runner Python
 CMD ["/usr/local/bin/task-runner-launcher", "python"]
