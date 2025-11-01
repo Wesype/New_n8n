@@ -16,11 +16,15 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     wget \
     ca-certificates \
+    tar \
     && rm -rf /var/lib/apt/lists/*
 
 # Télécharger et installer le task-runner-launcher
-RUN wget https://github.com/n8n-io/task-runner-launcher/releases/download/1.4.0/task-runner-launcher_linux_amd64 -O /usr/local/bin/task-runner-launcher && \
-    chmod +x /usr/local/bin/task-runner-launcher
+RUN wget https://github.com/n8n-io/task-runner-launcher/releases/download/1.4.0/task-runner-launcher-1.4.0-linux-amd64.tar.gz && \
+    tar -xzf task-runner-launcher-1.4.0-linux-amd64.tar.gz && \
+    mv task-runner-launcher /usr/local/bin/task-runner-launcher && \
+    chmod +x /usr/local/bin/task-runner-launcher && \
+    rm task-runner-launcher-1.4.0-linux-amd64.tar.gz
 
 # Télécharger les runners JavaScript et Python de n8n
 RUN npm install -g @n8n/task-runner
