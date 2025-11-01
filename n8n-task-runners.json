@@ -1,19 +1,20 @@
 {
-    "task-runners": [
-      {
-        "runner-type": "javascript",
-        "env-overrides": {
-          "NODE_FUNCTION_ALLOW_BUILTIN": "crypto,fs,path",
-          "NODE_FUNCTION_ALLOW_EXTERNAL": ""
-        }
-      },
-      {
-        "runner-type": "python",
-        "env-overrides": {
-          "PYTHONPATH": "/opt/runners/task-runner-python",
-          "N8N_RUNNERS_STDLIB_ALLOW": "json,sys,os,re",
-          "N8N_RUNNERS_EXTERNAL_ALLOW": "crawl4ai,playwright,beautifulsoup4,lxml,aiohttp,aiofiles"
-        }
+  "task-runners": [
+    {
+      "runner-type": "javascript",
+      "env-overrides": {
+        "NODE_FUNCTION_ALLOW_BUILTIN": "crypto,fs,path",
+        "NODE_FUNCTION_ALLOW_EXTERNAL": ""
       }
-    ]
-  }
+    },
+    {
+      "runner-type": "python",
+      "working-dir": "/home/node",
+      "env-overrides": {
+        "PYTHONPATH": "/usr/local/lib/python3.11/site-packages",
+        "N8N_RUNNERS_STDLIB_ALLOW": "json,sys,os,re",
+        "N8N_RUNNERS_EXTERNAL_ALLOW": "crawl4ai,playwright,beautifulsoup4,lxml,aiohttp,aiofiles"
+      }
+    }
+  ]
+}
