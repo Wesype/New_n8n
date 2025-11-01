@@ -48,6 +48,9 @@ ENV PLAYWRIGHT_CHROMIUM_ARGS="--no-sandbox --disable-setuid-sandbox"
 # Créer l'utilisateur node
 RUN useradd -m -u 1000 node || true
 
+# Créer un répertoire de travail
+RUN mkdir -p /home/node/work && chown -R node:node /home/node
+
 # Copier la configuration allowlist
 COPY n8n-task-runners.json /etc/n8n-task-runners.json
 
@@ -55,6 +58,9 @@ COPY n8n-task-runners.json /etc/n8n-task-runners.json
 RUN chown -R node:node /etc/n8n-task-runners.json
 
 USER node
+
+# Définir le répertoire de travail
+WORKDIR /home/node/work
 
 # Lancer uniquement le runner Python
 CMD ["/usr/local/bin/task-runner-launcher", "python"]
