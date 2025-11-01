@@ -2,26 +2,33 @@ FROM n8nio/runners:1.117.3
 
 USER root
 
-# Installer les dépendances système (Alpine utilise apk, pas apt-get)
+# Installer les dépendances système
 RUN apk add --no-cache \
     build-base \
     wget \
     ca-certificates \
     python3-dev \
-    linux-headers
+    linux-headers \
+    chromium \
+    chromium-chromedriver \
+    nss \
+    freetype \
+    harfbuzz \
+    ttf-freefont
 
-# Installer vos packages Python
+# Installer pytest-playwright (la bonne commande !)
+RUN pip install --no-cache-dir pytest-playwright
+
+# Installer les navigateurs Playwright
+RUN playwright install chromium
+
+# Installer vos autres packages Python
 RUN pip install --no-cache-dir \
     crawl4ai \
-    playwright \
     beautifulsoup4 \
     lxml \
     aiohttp \
     aiofiles
-
-# Installer Playwright Chromium
-RUN playwright install chromium
-RUN playwright install-deps chromium
 
 # Variables d'environnement pour Playwright
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
