@@ -1,40 +1,52 @@
-FROM n8nio/runners:1.117.3
+# Partir d'une base Debian avec Python
+FROM python:3.11-slim-bookworm
 
 USER root
 
+# Installer Node.js (nécessaire pour n8n runners)
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
 # Installer les dépendances système
-RUN apk add --no-cache \
-    build-base \
+RUN apt-get update && apt-get install -y \
+    build-essential \
     wget \
     ca-certificates \
-    python3-dev \
-    linux-headers \
-    chromium \
-    chromium-chromedriver \
-    nss \
-    freetype \
-    harfbuzz \
-    ttf-freefont
+    && rm -rf /var/lib/apt/lists/*
 
-# Installer pytest-playwright (la bonne commande !)
-RUN pip install --no-cache-dir pytest-playwright
+# Installer le task runner de n8n
+RUN npm install -g @n8n/task-runner
 
-# Installer les navigateurs Playwright
-RUN playwright install chromium
-
-# Installer vos autres packages Python
+# Installer playwright et crawl4ai
 RUN pip install --no-cache-dir \
+    playwright \
     crawl4ai \
     beautifulsoup4 \
     lxml \
     aiohttp \
     aiofiles
 
-# Variables d'environnement pour Playwright
+# Installer les navigateurs Playwright
+RUN playwright install --with-deps chromium
+
+# Variables d'environnement
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 ENV PLAYWRIGHT_CHROMIUM_ARGS="--no-sandbox --disable-setuid-sandbox"
+
+# Créer l'utilisateur node
+RUN useradd -m -u 1000 node || true
 
 # Copier la configuration allowlist
 COPY n8n-task-runners.json /etc/n8n-task-runners.json
 
+# Donner les permissions
+RUN chown -R node:node /etc/n8n-task-runners.json
+
 USER node
+
+# Lancer le task runner
+CMD ["task-runner"]
