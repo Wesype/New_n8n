@@ -2,12 +2,13 @@ FROM n8nio/runners:1.117.3
 
 USER root
 
-# Installer les dépendances système nécessaires
-RUN apt-get update && apt-get install -y \
-    build-essential \
+# Installer les dépendances système (Alpine utilise apk, pas apt-get)
+RUN apk add --no-cache \
+    build-base \
     wget \
     ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+    python3-dev \
+    linux-headers
 
 # Installer vos packages Python
 RUN pip install --no-cache-dir \
@@ -18,11 +19,15 @@ RUN pip install --no-cache-dir \
     aiohttp \
     aiofiles
 
-# Installer les navigateurs Playwright
-RUN playwright install --with-deps chromium
+# Installer Playwright Chromium
+RUN playwright install chromium
+RUN playwright install-deps chromium
 
 # Variables d'environnement pour Playwright
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 ENV PLAYWRIGHT_CHROMIUM_ARGS="--no-sandbox --disable-setuid-sandbox"
+
+# Copier la configuration allowlist
+COPY n8n-task-runners.json /etc/n8n-task-runners.json
 
 USER node
