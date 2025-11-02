@@ -1,25 +1,6 @@
 {
   "task-runners": [
     {
-      "runner-type": "javascript",
-      "workdir": "/home/node",
-      "command": "/usr/local/bin/node",
-      "args": [
-        "--disallow-code-generation-from-strings",
-        "--disable-proto=delete",
-        "/usr/local/lib/node_modules/@n8n/task-runner/dist/start.js"
-      ],
-      "health-check-server-port": "5681",
-      "allowed-env": [
-        "PATH"
-      ],
-      "env-overrides": {
-        "NODE_FUNCTION_ALLOW_BUILTIN": "crypto,fs,path",
-        "NODE_FUNCTION_ALLOW_EXTERNAL": "",
-        "N8N_RUNNERS_HEALTH_CHECK_SERVER_HOST": "0.0.0.0"
-      }
-    },
-    {
       "runner-type": "python",
       "workdir": "/opt/n8n/packages/@n8n/task-runner-python",
       "command": "/usr/local/bin/python3",
@@ -33,9 +14,13 @@
       ],
       "env-overrides": {
         "PYTHONPATH": "/opt/n8n/packages/@n8n/task-runner-python",
-        "N8N_RUNNERS_STDLIB_ALLOW": "json,sys,os,re,asyncio,io,tempfile",
+        "PLAYWRIGHT_BROWSERS_PATH": "/root/.cache/ms-playwright",
+        "PLAYWRIGHT_CHROMIUM_ARGS": "--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage",
+        "N8N_RUNNERS_STDLIB_ALLOW": "json,sys,os,re,asyncio,time,io,tempfile",
         "N8N_RUNNERS_EXTERNAL_ALLOW": "crawl4ai,playwright,beautifulsoup4,lxml,aiohttp,aiofiles",
-        "N8N_RUNNERS_HEALTH_CHECK_SERVER_HOST": "0.0.0.0"
+        "N8N_RUNNERS_HEALTH_CHECK_SERVER_HOST": "0.0.0.0",
+        "N8N_RUNNERS_TASK_TIMEOUT": "60000",
+        "N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT": "30"
       }
     }
   ]
