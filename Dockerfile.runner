@@ -26,8 +26,8 @@ RUN wget https://github.com/n8n-io/task-runner-launcher/releases/download/1.4.0/
     chmod +x /usr/local/bin/task-runner-launcher && \
     rm task-runner-launcher-1.4.0-linux-amd64.tar.gz
 
-# Télécharger les runners JavaScript et Python de n8n
-RUN npm install -g @n8n/task-runner
+# Installer le runner Python de n8n
+RUN pip install --no-cache-dir n8n-task-runner
 
 # Installer playwright et crawl4ai
 RUN pip install --no-cache-dir \
@@ -44,6 +44,7 @@ RUN playwright install --with-deps chromium
 # Variables d'environnement
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 ENV PLAYWRIGHT_CHROMIUM_ARGS="--no-sandbox --disable-setuid-sandbox"
+ENV N8N_RUNNERS_WORKING_DIR=/home/node
 
 # Créer l'utilisateur node et son répertoire de travail
 RUN useradd -m -u 1000 node || true
