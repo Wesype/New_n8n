@@ -25,7 +25,7 @@ RUN wget https://github.com/n8n-io/task-runner-launcher/releases/download/1.4.0/
 # Cloner le repo n8n et garder le code source
 RUN git clone --depth 1 --branch master https://github.com/n8n-io/n8n.git /opt/n8n
 
-# Installer le runner Python en mode editable (ne pas supprimer /opt/n8n après)
+# Installer le runner Python en mode editable
 WORKDIR /opt/n8n/packages/@n8n/task-runner-python
 RUN pip install --no-cache-dir -e .
 
@@ -38,14 +38,11 @@ RUN pip install --no-cache-dir \
     aiohttp \
     aiofiles
 
-# Installer les navigateurs Playwright
+# Installer les navigateurs Playwright (emplacement par défaut)
 RUN playwright install --with-deps chromium
 
-# Variables d'environnement
-ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
-ENV PLAYWRIGHT_CHROMIUM_ARGS="--no-sandbox --disable-setuid-sandbox"
+# Variables d'environnement (SANS PLAYWRIGHT_BROWSERS_PATH)
 ENV N8N_RUNNERS_WORKING_DIR=/home/node
-ENV PYTHONPATH=/opt/n8n/packages/@n8n/task-runner-python/src
 
 # Créer l'utilisateur node
 RUN useradd -m -u 1000 node || true
