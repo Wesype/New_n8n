@@ -23,7 +23,7 @@
       "runner-type": "python",
       "workdir": "/home/node",
       "command": "/usr/local/bin/python3",
-      "args": ["-m", "n8n_task_runner"],
+      "args": ["-m", "task_runner_python"],
       "health-check-server-port": "5682",
       "allowed-env": [
         "PATH",
@@ -31,7 +31,7 @@
         "PLAYWRIGHT_CHROMIUM_ARGS"
       ],
       "env-overrides": {
-        "PYTHONPATH": "/usr/local/lib/python3.11/site-packages",
+        "PYTHONPATH": "/usr/local/lib/python3.13/site-packages",
         "N8N_RUNNERS_STDLIB_ALLOW": "json,sys,os,re",
         "N8N_RUNNERS_EXTERNAL_ALLOW": "crawl4ai,playwright,beautifulsoup4,lxml,aiohttp,aiofiles",
         "N8N_RUNNERS_HEALTH_CHECK_SERVER_HOST": "0.0.0.0"
