@@ -14,8 +14,8 @@
       ],
       "env-overrides": {
         "PYTHONPATH": "/opt/n8n/packages/@n8n/task-runner-python",
-        "N8N_RUNNERS_STDLIB_ALLOW": "json,sys,os,re,asyncio,time,io,tempfile,base64,bs4",
-        "N8N_RUNNERS_EXTERNAL_ALLOW": "crawl4ai,playwright,beautifulsoup4,lxml,aiohttp,aiofiles",
+        "N8N_RUNNERS_STDLIB_ALLOW": "json,sys,os,re,asyncio,time,io,tempfile,base64",
+        "N8N_RUNNERS_EXTERNAL_ALLOW": "crawl4ai,playwright,beautifulsoup4,bs4,lxml,aiohttp,aiofiles",
         "N8N_RUNNERS_HEALTH_CHECK_SERVER_HOST": "0.0.0.0",
         "N8N_RUNNERS_TASK_TIMEOUT": "60000",
         "N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT": "30"
