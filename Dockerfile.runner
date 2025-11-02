@@ -26,8 +26,11 @@ RUN wget https://github.com/n8n-io/task-runner-launcher/releases/download/1.4.0/
     chmod +x /usr/local/bin/task-runner-launcher && \
     rm task-runner-launcher-1.4.0-linux-amd64.tar.gz
 
-# Installer le runner Python de n8n
-RUN pip install --no-cache-dir n8n-task-runner
+# Installer le runner Python de n8n via npm
+RUN npm install -g @n8n/task-runner
+
+# Créer un lien symbolique pour que Python trouve le module
+RUN ln -s /usr/local/lib/node_modules/@n8n/task-runner/dist/runners/python /usr/local/lib/python3.11/site-packages/n8n_task_runner
 
 # Installer playwright et crawl4ai
 RUN pip install --no-cache-dir \
