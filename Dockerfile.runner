@@ -27,7 +27,12 @@ RUN git clone --depth 1 --branch master https://github.com/n8n-io/n8n.git /tmp/n
 
 # Installer le runner Python de n8n
 WORKDIR /tmp/n8n/packages/@n8n/task-runner-python
-RUN pip install --no-cache-dir .
+RUN pip install --no-cache-dir -e .
+
+# DEBUG : Vérifier ce qui s'est installé
+RUN python3 -c "import sys; print('Python path:', sys.path)" && \
+    pip list | grep task && \
+    python3 -c "import task_runner_python; print('Module found!')" || echo "Module NOT found"
 
 # Installer crawl4ai et ses dépendances
 RUN pip install --no-cache-dir \
