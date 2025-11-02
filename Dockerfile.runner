@@ -22,17 +22,12 @@ RUN wget https://github.com/n8n-io/task-runner-launcher/releases/download/1.4.0/
     chmod +x /usr/local/bin/task-runner-launcher && \
     rm task-runner-launcher-1.4.0-linux-amd64.tar.gz
 
-# Cloner le repo n8n pour obtenir le runner Python
-RUN git clone --depth 1 --branch master https://github.com/n8n-io/n8n.git /tmp/n8n
+# Cloner le repo n8n et garder le code source
+RUN git clone --depth 1 --branch master https://github.com/n8n-io/n8n.git /opt/n8n
 
-# Installer le runner Python de n8n
-WORKDIR /tmp/n8n/packages/@n8n/task-runner-python
+# Installer le runner Python en mode editable (ne pas supprimer /opt/n8n après)
+WORKDIR /opt/n8n/packages/@n8n/task-runner-python
 RUN pip install --no-cache-dir -e .
-
-# DEBUG : Vérifier ce qui s'est installé
-RUN python3 -c "import sys; print('Python path:', sys.path)" && \
-    pip list | grep task && \
-    python3 -c "import task_runner_python; print('Module found!')" || echo "Module NOT found"
 
 # Installer crawl4ai et ses dépendances
 RUN pip install --no-cache-dir \
@@ -46,13 +41,11 @@ RUN pip install --no-cache-dir \
 # Installer les navigateurs Playwright
 RUN playwright install --with-deps chromium
 
-# Nettoyer
-RUN rm -rf /tmp/n8n
-
 # Variables d'environnement
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 ENV PLAYWRIGHT_CHROMIUM_ARGS="--no-sandbox --disable-setuid-sandbox"
 ENV N8N_RUNNERS_WORKING_DIR=/home/node
+ENV PYTHONPATH=/opt/n8n/packages/@n8n/task-runner-python/src
 
 # Créer l'utilisateur node
 RUN useradd -m -u 1000 node || true
