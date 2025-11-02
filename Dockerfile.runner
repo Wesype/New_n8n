@@ -1,22 +1,18 @@
-# Partir d'une base Debian avec Python
-FROM python:3.11-slim-bookworm
+FROM python:3.13-slim-bookworm
 
 USER root
 
-# Installer Node.js (nécessaire pour n8n runners)
+# Installer Node.js et dépendances
 RUN apt-get update && apt-get install -y \
     curl \
     gnupg \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
-    && rm -rf /var/lib/apt/lists/*
-
-# Installer les dépendances système
-RUN apt-get update && apt-get install -y \
-    build-essential \
+    git \
     wget \
     ca-certificates \
+    build-essential \
     tar \
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 # Télécharger et installer le task-runner-launcher
@@ -26,13 +22,14 @@ RUN wget https://github.com/n8n-io/task-runner-launcher/releases/download/1.4.0/
     chmod +x /usr/local/bin/task-runner-launcher && \
     rm task-runner-launcher-1.4.0-linux-amd64.tar.gz
 
-# Installer le runner Python de n8n via npm
-RUN npm install -g @n8n/task-runner
+# Cloner le repo n8n pour obtenir le runner Python
+RUN git clone --depth 1 --branch master https://github.com/n8n-io/n8n.git /tmp/n8n
 
-# Créer un lien symbolique pour que Python trouve le module
-RUN ln -s /usr/local/lib/node_modules/@n8n/task-runner/dist/runners/python /usr/local/lib/python3.11/site-packages/n8n_task_runner
+# Installer le runner Python de n8n
+WORKDIR /tmp/n8n/packages/@n8n/task-runner-python
+RUN pip install --no-cache-dir .
 
-# Installer playwright et crawl4ai
+# Installer crawl4ai et ses dépendances
 RUN pip install --no-cache-dir \
     playwright \
     crawl4ai \
@@ -44,23 +41,25 @@ RUN pip install --no-cache-dir \
 # Installer les navigateurs Playwright
 RUN playwright install --with-deps chromium
 
+# Nettoyer
+RUN rm -rf /tmp/n8n
+
 # Variables d'environnement
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 ENV PLAYWRIGHT_CHROMIUM_ARGS="--no-sandbox --disable-setuid-sandbox"
 ENV N8N_RUNNERS_WORKING_DIR=/home/node
 
-# Créer l'utilisateur node et son répertoire de travail
+# Créer l'utilisateur node
 RUN useradd -m -u 1000 node || true
 RUN mkdir -p /home/node/.n8n && chown -R node:node /home/node
 
-# Copier la configuration allowlist
+# Copier la configuration
 COPY n8n-task-runners.json /etc/n8n-task-runners.json
 RUN chown node:node /etc/n8n-task-runners.json
 
 USER node
 
-# Définir le répertoire de travail
 WORKDIR /home/node
 
-# Lancer uniquement le runner Python
+# Lancer le runner Python
 CMD ["/usr/local/bin/task-runner-launcher", "python"]
