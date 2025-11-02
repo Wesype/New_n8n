@@ -38,13 +38,16 @@ RUN pip install --no-cache-dir \
     aiohttp \
     aiofiles
 
-# Créer l'utilisateur node AVANT d'installer les navigateurs
+# Installer les dépendances système de Playwright EN ROOT
+RUN playwright install-deps chromium
+
+# Créer l'utilisateur node
 RUN useradd -m -u 1000 node || true
 RUN mkdir -p /home/node/.n8n /home/node/.cache && chown -R node:node /home/node
 
-# Installer les navigateurs Playwright en tant que node
+# Installer les navigateurs Playwright en tant que node (sans --with-deps)
 USER node
-RUN playwright install --with-deps chromium
+RUN playwright install chromium
 
 # Revenir en root pour finaliser
 USER root
