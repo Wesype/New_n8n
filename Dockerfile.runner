@@ -22,14 +22,14 @@ RUN wget https://github.com/n8n-io/task-runner-launcher/releases/download/1.4.0/
     chmod +x /usr/local/bin/task-runner-launcher && \
     rm task-runner-launcher-1.4.0-linux-amd64.tar.gz
 
-# Cloner le repo n8n et garder le code source
+# Cloner le repo n8n
 RUN git clone --depth 1 --branch master https://github.com/n8n-io/n8n.git /opt/n8n
 
-# Installer le runner Python en mode editable
+# Installer le runner Python
 WORKDIR /opt/n8n/packages/@n8n/task-runner-python
 RUN pip install --no-cache-dir -e .
 
-# Installer crawl4ai et ses dépendances
+# Installer crawl4ai et dépendances
 RUN pip install --no-cache-dir \
     playwright \
     crawl4ai \
@@ -38,23 +38,25 @@ RUN pip install --no-cache-dir \
     aiohttp \
     aiofiles
 
-# Installer les navigateurs Playwright (emplacement par défaut)
+# Créer l'utilisateur node AVANT d'installer les navigateurs
+RUN useradd -m -u 1000 node || true
+RUN mkdir -p /home/node/.n8n /home/node/.cache && chown -R node:node /home/node
+
+# Installer les navigateurs Playwright en tant que node
+USER node
 RUN playwright install --with-deps chromium
 
-# Variables d'environnement (SANS PLAYWRIGHT_BROWSERS_PATH)
-ENV N8N_RUNNERS_WORKING_DIR=/home/node
-
-# Créer l'utilisateur node
-RUN useradd -m -u 1000 node || true
-RUN mkdir -p /home/node/.n8n && chown -R node:node /home/node
+# Revenir en root pour finaliser
+USER root
 
 # Copier la configuration
 COPY n8n-task-runners.json /etc/n8n-task-runners.json
 RUN chown node:node /etc/n8n-task-runners.json
 
-USER node
+# Variables d'environnement
+ENV N8N_RUNNERS_WORKING_DIR=/home/node
 
+USER node
 WORKDIR /home/node
 
-# Lancer le runner Python
 CMD ["/usr/local/bin/task-runner-launcher", "python"]
